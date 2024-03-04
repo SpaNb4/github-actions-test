@@ -13,4 +13,5 @@ jobs:
         with:
           fetch-depth: 0
       - uses: actions/setup-node@v3
-      - run: echo ${{ github.base_ref}}
+      - name: Debug event payload
+        run: cat $GITHUB_EVENT_PATH

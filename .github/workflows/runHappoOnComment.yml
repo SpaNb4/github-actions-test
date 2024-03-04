@@ -1,0 +1,20 @@
+name: Run Happo on PR comment
+on:
+  issue_comment:
+    types:
+      - created
+
+env:
+  NODE_VERSION: '18'
+jobs:
+  run-happo:
+    if: ${{ github.event.issue.pull_request && github.event.comment.body == 'run happo now' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      - run: echo "Running Happo"

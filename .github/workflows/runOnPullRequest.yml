@@ -12,5 +12,8 @@ jobs:
         with:
           fetch-depth: 0
       - uses: actions/setup-node@v3
-      - name: Debug event payload
-        run: cat $GITHUB_EVENT_PATH
+      - name: Display pull request info
+        run: |
+          echo "Previous SHA: ${{ github.event.pull_request.base.sha }}"
+          echo "Current SHA: ${{ github.event.pull_request.head.sha }}"
+          echo "Change URL: ${{ github.event.pull_request.html_url }}"

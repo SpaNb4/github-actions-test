@@ -16,7 +16,8 @@ jobs:
         id: set_env
         run: |
           PREVIOUS_SHA=$(git rev-parse origin/main)
-          CURRENT_SHA=$(git rev-parse HEAD)
+          CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+          CURRENT_SHA=$(git rev-parse "origin/$CURRENT_BRANCH")
           CHANGE_URL=${{ github.event.issue.html_url }}
           echo "PREVIOUS_SHA=$PREVIOUS_SHA" >> $GITHUB_ENV
           echo "CURRENT_SHA=$CURRENT_SHA" >> $GITHUB_ENV

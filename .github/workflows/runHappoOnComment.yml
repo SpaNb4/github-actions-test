@@ -21,7 +21,7 @@ jobs:
             const { owner, repo } = context.repo;
 
             async function getPullRequestBranches() {
-              const response = await github.pulls.get({
+              const response = await github.rest.pulls.get({
                 owner,
                 repo,
                 pull_number,

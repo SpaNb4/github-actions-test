@@ -41,16 +41,12 @@ jobs:
 
             return await getPullRequestInfo();
 
-      - name: Parse pull request info
-        id: parse-pull-request-info
-        run: echo "::set-output name=pull-request-info::${{ steps.get-pull-request-info.outputs.result }}"
-
       - name: Set environment variables
         run: |
-          PULL_REQUEST_INFO=$(echo "${{ steps.parse-pull-request-info.outputs.pull-request-info }}")
-          PREVIOUS_SHA=$(echo $PULL_REQUEST_INFO | jq -r '.previousSHA')
-          CURRENT_SHA=$(echo $PULL_REQUEST_INFO | jq -r '.currentSHA')
-          CHANGE_URL=$(echo $PULL_REQUEST_INFO | jq -r '.changeURL')
+          PULL_REQUEST_INFO=$(echo "${{ fromJson(steps.get-pull-request-info.outputs.result) }}")
+          PREVIOUS_SHA=$(echo "$PULL_REQUEST_INFO" | jq -r '.previousSHA')
+          CURRENT_SHA=$(echo "$PULL_REQUEST_INFO" | jq -r '.currentSHA')
+          CHANGE_URL=$(echo "$PULL_REQUEST_INFO" | jq -r '.changeURL')
           echo "PREVIOUS_SHA=$PREVIOUS_SHA" >> $GITHUB_ENV
           echo "CURRENT_SHA=$CURRENT_SHA" >> $GITHUB_ENV
           echo "CHANGE_URL=$CHANGE_URL" >> $GITHUB_ENV

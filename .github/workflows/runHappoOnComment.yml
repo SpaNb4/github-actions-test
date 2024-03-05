@@ -42,6 +42,6 @@ jobs:
 
       - name: Display environment variables
         run: |
-          echo "PREVIOUS SHA: {{ env.PREVIOUS_SHA }}"
-          echo "CURRENT SHA: {{ env.CURRENT_SHA }}"
-          echo "CHANGE URL: {{ env.CHANGE_URL }}"
+          echo "PREVIOUS SHA: ${{ env.PREVIOUS_SHA }}"
+          echo "CURRENT SHA: ${{ env.CURRENT_SHA }}"
+          echo "CHANGE URL: ${{ env.CHANGE_URL }}"

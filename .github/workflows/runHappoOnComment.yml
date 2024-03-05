@@ -9,11 +9,28 @@ jobs:
     if: ${{ github.event.issue.pull_request && github.event.comment.body == 'run happo now' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - name: Get pull request details
+        id: pr_details
+        uses: octokit/request-action@v2.x
         with:
-          fetch-depth: 0
-      - uses: actions/setup-node@v3
-      - run: npm run happo-ci-github-actions
-        env:
-          HAPPO_API_KEY: ${{ secrets.HAPPO_API_KEY }}
-          HAPPO_API_SECRET: ${{ secrets.HAPPO_API_SECRET }}
+          route: GET /repos/:owner/:repo/pulls/:pull_number
+          owner: ${{ github.repository_owner }}
+          repo: ${{ github.repository }}
+          pull_number: ${{ github.event.issue.number }}
+          headers:
+            authorization: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set environment variables
+        run: |
+          echo "PREVIOUS_SHA=$(jq -r '.data.base.sha' ${{ steps.pr_details.outputs.data_path }})" >> $GITHUB_ENV
+          echo "CURRENT_SHA=$(jq -r '.data.head.sha' ${{ steps.pr_details.outputs.data_path }})" >> $GITHUB_ENV
+          echo "CHANGE_URL=$(jq -r '.data.html_url' ${{ steps.pr_details.outputs.data_path }})" >> $GITHUB_ENV
+
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Display environment variables
+        run: |
+          echo "PREVIOUS_SHA=$PREVIOUS_SHA"
+          echo "CURRENT_SHA=$CURRENT_SHA"
+          echo "CHANGE_URL=$CHANGE_URL"

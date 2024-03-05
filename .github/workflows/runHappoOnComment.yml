@@ -34,17 +34,16 @@ jobs:
               return { previousSHA, currentSHA, changeURL };
             }
 
-            return getPullRequestInfo();
+            return await getPullRequestInfo();
 
-      - name: Set output variables
-        id: set_output_variables
+      - name: Set environment variables
         run: |
-          echo "::set-output name=previousSHA::${{ steps.get_pull_request_info.outputs.previousSHA }}"
-          echo "::set-output name=currentSHA::${{ steps.get_pull_request_info.outputs.currentSHA }}"
-          echo "::set-output name=changeURL::${{ steps.get_pull_request_info.outputs.changeURL }}"
+          echo "PREVIOUS_SHA=${{ steps.get-pull-request-info.outputs.result.previousSHA }}" >> $GITHUB_ENV
+          echo "CURRENT_SHA=${{ steps.get-pull-request-info.outputs.result.currentSHA }}" >> $GITHUB_ENV
+          echo "CHANGE_URL=${{ steps.get-pull-request-info.outputs.result.changeURL }}" >> $GITHUB_ENV
 
       - name: Display environment variables
         run: |
-          echo "PREVIOUS SHA: ${{ steps.set_output_variables.outputs.previousSHA }}"
-          echo "CURRENT SHA: ${{ steps.set_output_variables.outputs.currentSHA }}"
-          echo "CHANGE URL: ${{ steps.set_output_variables.outputs.changeURL }}"
+          echo "PREVIOUS SHA: $PREVIOUS_SHA"
+          echo "CURRENT SHA: $CURRENT_SHA"
+          echo "CHANGE URL: $CHANGE_URL"

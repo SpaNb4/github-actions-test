@@ -13,7 +13,6 @@ jobs:
         with:
           fetch-depth: 0
       - uses: actions/setup-node@v3
-      - run: echo ${{ github.base_ref}}
       - run: npm run happo-ci-github-actions
         env:
           HAPPO_API_KEY: ${{ secrets.HAPPO_API_KEY }}

@@ -35,17 +35,13 @@ jobs:
             }
 
             const { previousSHA, currentSHA, changeURL } = await getPullRequestInfo();
-            console.log('PREVIOUS SHA:', previousSHA);
-            console.log('CURRENT SHA:', currentSHA);
-            console.log('CHANGE URL:', changeURL);
 
-            // Set environment variables
             process.env.PREVIOUS_SHA = previousSHA;
             process.env.CURRENT_SHA = currentSHA;
             process.env.CHANGE_URL = changeURL;
 
       - name: Display environment variables
         run: |
-          echo "PREVIOUS SHA: $PREVIOUS_SHA"
-          echo "CURRENT SHA: $CURRENT_SHA"
-          echo "CHANGE URL: $CHANGE_URL"
+          echo "PREVIOUS SHA: {{ env.PREVIOUS_SHA }}"
+          echo "CURRENT SHA: {{ env.CURRENT_SHA }}"
+          echo "CHANGE URL: {{ env.CHANGE_URL }}"

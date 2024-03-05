@@ -12,7 +12,5 @@ jobs:
         with:
           fetch-depth: 0
       - uses: actions/setup-node@v3
-      - run: npm run happo-ci-github-actions
-        env:
-          HAPPO_API_KEY: ${{ secrets.HAPPO_API_KEY }}
-          HAPPO_API_SECRET: ${{ secrets.HAPPO_API_SECRET }}
+      - name: Debug event payload
+        run: cat $GITHUB_EVENT_PATH

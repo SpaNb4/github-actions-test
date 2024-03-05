@@ -43,9 +43,9 @@ jobs:
 
       - name: Set environment variables
         run: |
-          PREVIOUS_SHA=$(echo ${{ steps.get-pull-request-info.outputs.result.previousSHA}} }})
-          CURRENT_SHA=$(echo ${{ steps.get-pull-request-info.outputs.result.currentSHA}} }})
-          CHANGE_URL=$(echo ${{ steps.get-pull-request-info.outputs.result.changeURL}} }})
+          PREVIOUS_SHA=$(echo '${{ steps.get-pull-request-info.outputs.result.previousSHA}}')
+          CURRENT_SHA=$(echo '${{ steps.get-pull-request-info.outputs.result }}' | jq -r '.currentSHA')
+          CHANGE_URL=$(echo ${{ steps.get-pull-request-info.outputs.result.changeURL}})
           echo "PREVIOUS_SHA=$PREVIOUS_SHA" >> $GITHUB_ENV
           echo "CURRENT_SHA=$CURRENT_SHA" >> $GITHUB_ENV
           echo "CHANGE_URL=$CHANGE_URL" >> $GITHUB_ENV

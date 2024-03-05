@@ -17,8 +17,8 @@ jobs:
           owner: ${{ github.repository_owner }}
           repo: ${{ github.repository }}
           pull_number: ${{ github.event.issue.number }}
-          headers:
-            authorization: ${{ secrets.GITHUB_TOKEN }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Set environment variables
         run: |

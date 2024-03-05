@@ -34,14 +34,17 @@ jobs:
               return { previousSHA, currentSHA, changeURL };
             }
 
-            const { previousSHA, currentSHA, changeURL } = await getPullRequestInfo();
+            return getPullRequestInfo();
 
-            process.env.PREVIOUS_SHA = previousSHA;
-            process.env.CURRENT_SHA = currentSHA;
-            process.env.CHANGE_URL = changeURL;
+      - name: Set output variables
+        id: set_output_variables
+        run: |
+          echo "::set-output name=previousSHA::${{ steps.get_pull_request_info.outputs.previousSHA }}"
+          echo "::set-output name=currentSHA::${{ steps.get_pull_request_info.outputs.currentSHA }}"
+          echo "::set-output name=changeURL::${{ steps.get_pull_request_info.outputs.changeURL }}"
 
       - name: Display environment variables
         run: |
-          echo "PREVIOUS SHA: ${{ env.PREVIOUS_SHA }}"
-          echo "CURRENT SHA: ${{ env.CURRENT_SHA }}"
-          echo "CHANGE URL: ${{ env.CHANGE_URL }}"
+          echo "PREVIOUS SHA: ${{ steps.set_output_variables.outputs.previousSHA }}"
+          echo "CURRENT SHA: ${{ steps.set_output_variables.outputs.currentSHA }}"
+          echo "CHANGE URL: ${{ steps.set_output_variables.outputs.changeURL }}"

@@ -12,19 +12,34 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Set environment variables
-        id: set_env
-        run: |
-          PREVIOUS_SHA=$(git rev-parse origin/main)
-          CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
-          CURRENT_SHA=$(git rev-parse "origin/$CURRENT_BRANCH")
-          CHANGE_URL=${{ github.event.issue.html_url }}
-          echo "PREVIOUS_SHA=$PREVIOUS_SHA" >> $GITHUB_ENV
-          echo "CURRENT_SHA=$CURRENT_SHA" >> $GITHUB_ENV
-          echo "CHANGE_URL=$CHANGE_URL" >> $GITHUB_ENV
+      - name: Get pull request branches
+        uses: actions/github-script@v5
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const { context, github } = require('@actions/github');
 
-      - name: Display environment variables
-        run: |
-          echo "PREVIOUS_SHA=$PREVIOUS_SHA"
-          echo "CURRENT_SHA=$CURRENT_SHA"
-          echo "CHANGE_URL=$CHANGE_URL"
+            const pull_number = context.payload.issue.number;
+            const { owner, repo } = context.repo;
+
+            async function getPullRequestBranches() {
+              const response = await github.pulls.get({
+                owner,
+                repo,
+                pull_number,
+              });
+
+              const baseBranch = response.data.base.ref;
+              const headBranch = response.data.head.ref;
+
+              return { baseBranch, headBranch };
+            }
+
+            const branches = await getPullRequestBranches();
+            console.log("Base Branch:", branches.baseBranch);
+            console.log("Head Branch:", branches.headBranch);
+
+            // Set environment variables
+            process.env.PREVIOUS_SHA = branches.baseBranch;
+            process.env.CURRENT_SHA = branches.headBranch;
+            process.env.CHANGE_URL = context.payload.issue.html_url;

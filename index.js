@@ -1,15 +1,12 @@
-import { Octokit } from '@octokit/rest';
+const { Octokit } = require('@octokit/rest');
 
 const octokit = new Octokit();
 
-const pull_number = context.payload.issue.number;
-const { owner, repo } = context.repo;
-
 async function getPullRequestInfo() {
   const response = await octokit.rest.pulls.get({
-    owner,
-    repo,
-    pull_number,
+    owner: 'spanb4',
+    repo: 'github-actions-test',
+    pull_number: 1,
   });
 
   const previousSHA = response.data.base.sha;
@@ -19,7 +16,9 @@ async function getPullRequestInfo() {
   return { previousSHA, currentSHA, changeURL };
 }
 
-const { previousSHA, currentSHA, changeURL } = await getPullRequestInfo();
-console.log('PREVIOUS SHA:', previousSHA);
-console.log('CURRENT SHA:', currentSHA);
-console.log('CHANGE URL:', changeURL);
+(async () => {
+  const { previousSHA, currentSHA, changeURL } = await getPullRequestInfo();
+  console.log('PREVIOUS SHA:', previousSHA);
+  console.log('CURRENT SHA:', currentSHA);
+  console.log('CHANGE URL:', changeURL);
+})();

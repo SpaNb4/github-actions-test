@@ -9,49 +9,18 @@ jobs:
     if: ${{ github.event.issue.pull_request && github.event.comment.body == 'run happo now' }}
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Get pull request info
-        uses: actions/github-script@v7
-        id: get-pull-request-info
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const pull_number = context.payload.issue.number;
-            const { owner, repo } = context.repo;
-
-            async function getPullRequestInfo() {
-              const response = await github.rest.pulls.get({
-                owner,
-                repo,
-                pull_number,
-              });
-
-              const previousSHA = response.data.base.sha;
-              const currentSHA = response.data.head.sha;
-              const changeURL = response.data.html_url;
-
-              console.log('Previous SHA:', previousSHA);
-              console.log('Current SHA:', currentSHA);
-              console.log('Change URL:', changeURL);
-
-              return { previousSHA, currentSHA, changeURL };
-            }
-
-            return await getPullRequestInfo();
-
-      - name: Set environment variables
+      - name: Extract PR info to env
         run: |
-          PREVIOUS_SHA=$(echo '${{ steps.get-pull-request-info.outputs.result }}' | jq -r '.previousSHA')
-          CURRENT_SHA=$(echo '${{ steps.get-pull-request-info.outputs.result }}' | jq -r '.currentSHA')
-          CHANGE_URL=$(echo '${{ steps.get-pull-request-info.outputs.result }}' | jq -r '.changeURL')
-          echo "PREVIOUS_SHA=$PREVIOUS_SHA" >> $GITHUB_ENV
-          echo "CURRENT_SHA=$CURRENT_SHA" >> $GITHUB_ENV
-          echo "CHANGE_URL=$CHANGE_URL" >> $GITHUB_ENV
-
-      - name: Display environment variables
+          PR_URL="${{ github.event.issue.pull_request.url }}"
+          PR_INFO=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" $PR_URL)
+          echo "CHANGE_URL=${PR_URL}" >> $GITHUB_ENV
+          BASE_BRANCH=$(echo "$PR_INFO" | jq -r '.base.ref')
+          LAST_COMMIT_SHA_BASE=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" "https://api.github.com/repos/${{ github.repository }}/commits/$BASE_BRANCH" | jq -r '.sha')
+          echo "PREVIOUS_SHA=${LAST_COMMIT_SHA_BASE}" >> $GITHUB_ENV
+          LAST_COMMIT_SHA_HEAD=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" $PR_URL/commits | jq -r '.[-1].sha')
+          echo "CURRENT_SHA=${LAST_COMMIT_SHA_HEAD}" >> $GITHUB_ENV
+      - name: Display env
         run: |
-          echo "PREVIOUS SHA: $PREVIOUS_SHA"
-          echo "CURRENT SHA: $CURRENT_SHA"
-          echo "CHANGE URL: $CHANGE_URL"
+          echo "CHANGE_URL=$CHANGE_URL"
+          echo "PREVIOUS_SHA=$PREVIOUS_SHA"
+          echo "CURRENT_SHA=$CURRENT_SHA"
